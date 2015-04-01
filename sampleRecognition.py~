@@ -289,5 +289,3 @@ def main():
 	get_profile_photos(service_id, name)
 	_create_folder_name(name, service_id)
 	save_face(name, service_id, face, picture_name)
-
-main()
