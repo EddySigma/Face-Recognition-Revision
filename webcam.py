@@ -4,6 +4,7 @@ import numpy as np
 
 faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 eyeCascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+mouthCascade = cv2.CascadeClassifier('Mouth.xml')
 
 video_capture = cv2.VideoCapture(0)
 
@@ -18,10 +19,14 @@ while True:
 		roi_color = frame[y:y+h, x:x+w]
 		cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
 		eyes = eyeCascade.detectMultiScale(roi_gray)
+		roi_gray = gray[h / 2:y+h, x:x+w]
+		mouth = mouthCascade.detectMultiScale(roi_gray)
 		#print 'eyes:', len(eyes)
 		for (ex, ey, ew, eh) in eyes:
 			if(len(eyes) / 2 <= len(faces)):
 				cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+				for(mx, my, mw, mh) in mouth:
+					cv2.rectangle(roi_color,(mx,my),(mx+mw,my+mh),(0,255,0),2)
 				count += 1
 				print 'FOUND A FULL FACE', count
 	cv2.imshow('Video', frame)
