@@ -4,7 +4,7 @@ import numpy as np
 
 faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 eyeCascade = cv2.CascadeClassifier('haarcascade_eye.xml')
-mouthCascade = cv2.CascadeClassifier('Mouth.xml')
+mouthCascade = cv2.CascadeClassifier('haarcascade_smile.xml')
 
 video_capture = cv2.VideoCapture(0)
 
