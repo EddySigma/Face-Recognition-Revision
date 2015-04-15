@@ -18,15 +18,16 @@ while True:
 		roi_gray = gray[y:y+(h / 2), x:x+w]
 		roi_color = frame[y:y+h, x:x+w]
 		eyes = eyeCascade.detectMultiScale(roi_gray)
-		mouth_roi_gray = gray[y+h/2:y+h, x:x+w]
+		y_value = y-(2*3/h)
+		mouth_roi_gray = gray[y_value:y+h, x:x+w]
 		mouth = mouthCascade.detectMultiScale(mouth_roi_gray)
 		cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
 		#print 'eyes:', len(eyes)
 		for (ex, ey, ew, eh) in eyes:
 			cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
 		for(mx, my, mw, mh) in mouth:
-			#if(len(eyes) / 2 <= len(faces)):
-			cv2.rectangle(roi_color,(mx,my),(mx+mw,my+mh),(0,0,255),2)
+			if my >= y_value:
+				cv2.rectangle(roi_color,(mx,my),(mx+mw,my+mh),(0,0,255),2)
 			
 	cv2.imshow('Video', frame)
 	if cv2.waitKey(1) & 0xFF == ord('q'):
