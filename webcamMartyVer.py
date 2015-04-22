@@ -13,13 +13,15 @@ def findEyes(conn, data):
         roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
         eyeCascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 	eyes = eyeCascade.detectMultiScale(data[0])
+	print 'eyes:', len(eyes)
 	if(len(eyes) == 0):
 		conn.send([0,0,0,0])
 		conn.close()
 	else:
 		for (x, y, w, h) in eyes:
 		        conn.send([x,y,x+w,y+h])
-			conn.close()
+		conn.close()
+		cv2.imshow('Video', frame)
 
 
 def findMouth(mouth_roi_gray, roi_color):
