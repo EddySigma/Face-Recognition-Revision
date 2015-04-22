@@ -13,7 +13,11 @@ def findEyes(conn, data):
         roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
         eyeCascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 	eyes = eyeCascade.detectMultiScale(data[0])
-	for (x, y, w, h) in eyes:
+        print('the eyes are working')
+        if (len(eyes) == 0):
+            conn.send([0,0,0,0])
+        else:
+	    for (x, y, w, h) in eyes:
                 conn.send([x,y,x+w,y+h])
 
 
@@ -24,6 +28,9 @@ def findMouth(mouth_roi_gray, roi_color):
 			cv2.rectangle(roi_color,(mx,my),(mx+mw,my+mh),(0,0,255),2)
 	return
 
+
+# Right now this stuff is implemented in the main program instead of using this function
+'''
 def findFace(frame, gray):
 	
 	
@@ -35,23 +42,24 @@ def findFace(frame, gray):
 		thread.start_new_thread(findEyes, (gray, eye_roi_color))
 	except:
 		print 'Failed eye thread'
-
+'''
 
 # The real program starts to run at this point.
 if __name__ == '__main__':
     faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml') # opens face data file
     video_capture = cv2.VideoCapture(0)
-
+    '''
     video_capture.set(3,1080)
     video_capture.set(4,1024)
     video_capture.set(15,0.1)
-
+    '''
 
     #parent_conn, child_conn = Pipe()    # this creates a pipe
     while True:
         parent_conn, child_conn = Pipe()
         ret, frame = video_capture.read() # get video or access camera?
-        
+        print ('this stuff runs1')
+
         if (ret):       # If an invalid frame is found then stop!
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) # video grayscale?
             faces = faceCascade.detectMultiScale(gray, 1.2, 6, minSize = (60,60)) # searches video for faces
@@ -60,14 +68,16 @@ if __name__ == '__main__':
                 cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2) # frame for the face: blue
                 roi_gray = gray[y:y+(h/2), x:x+w] # Area to search for the eyes. // this is half the face frame.
                 roi_color = frame[y:y+h,x:x+w]
-
+                print('this stuff runs2')
 
                 # thread that finds eyes
                 data = [roi_gray,x,y,w,h]
                 p = Process(target=findEyes, args=(child_conn, data,))
                 p.start()
+                print(parent_conn.recv())
                 eye_frame = parent_conn.recv()
                 cv2.rectangle(roi_color,(eye_frame[0],eye_frame[1]),(eye_frame[2],eye_frame[3]),(0,255,0),2)
+                p.join()
         else:
             break
 
@@ -77,6 +87,7 @@ if __name__ == '__main__':
             cv2.VideoCapture(0).release
             cv2.destroyAllWindows()
             WaitKey(1)
+            print('this stuff ran 3')
             break
 
 
@@ -111,4 +122,4 @@ if cv2.waitKey(1) & 0xFF == ord('q'):
 
 cv2.VideoCapture(0).release()
 cv2.destroyAllWindows()
-		
+print ('this is the end')
