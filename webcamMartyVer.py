@@ -5,15 +5,16 @@ from multiprocessing import Process, Pipe
 import thread
 
 mouthCascade = cv2.CascadeClassifier('haarcascade_smile.xml')
+rightEyeCascade = cv2.CascadeClassifier('right_eye.xml')
+leftEyeCascade = cv2.CascadeClassifier('left_eye.xml')
 x_offset=y_offset=50
 
 
 
-def findEyes(conn, data):
+def findRightEye(conn, data):
         roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
-        eyeCascade = cv2.CascadeClassifier('haarcascade_eye.xml')
-	eyes = eyeCascade.detectMultiScale(data[0])
-	print 'eyes:', len(eyes)
+	eyes = rightEyeCascade.detectMultiScale(data[0])
+	print 'Right Eye:', len(eyes)
 	if(len(eyes) == 0):
 		conn.send([0,0,0,0])
 		conn.close()
@@ -21,8 +22,18 @@ def findEyes(conn, data):
 		for (x, y, w, h) in eyes:
 		        conn.send([x,y,x+w,y+h])
 		conn.close()
-		cv2.imshow('Video', frame)
 
+def findLeftEye(conn, data):
+	roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
+	eyes = leftEyeCascade.detectMultiScale(data[0])
+	print 'Left Eye:', len(eyes)
+	if(len(eyes) == 0):
+		conn.send([0,0,0,0])
+		conn.close()
+	else:
+		for(x,y,w,h) in eyes:
+			conn.send([x,y,x+w,y+h])
+		conn.close()
 
 def findMouth(mouth_roi_gray, roi_color):
 	mouth = mouthCascade.detectMultiScale(mouth_roi_gray)
@@ -72,9 +83,11 @@ if __name__ == '__main__':
                 # thread that finds eyes
                 data = [roi_gray,x,y,w,h]
 		print 'here'
-                p = Process(target=findEyes, args=(child_conn, data,))
+                R = Process(target=findRightEye, args=(child_conn, data,))
+		L = Process(target=findLeftEye, args=(child_conn, data,))
 		print 'here2'
-                p.start()
+                R.start()
+		L.start()
 		print 'here3'
                 eye_frame = parent_conn.recv()
                 cv2.rectangle(roi_color,(eye_frame[0],eye_frame[1]),(eye_frame[2],eye_frame[3]),(0,255,0),2)
