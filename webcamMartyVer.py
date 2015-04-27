@@ -14,7 +14,7 @@ x_offset=y_offset=50
 # pkill -f webcamMartyVer.py
 
 def findRightEye(conn, data):
-        roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
+       # roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
 	eyes = rightEyeCascade.detectMultiScale(data[0])
 	#print 'Right Eye:', len(eyes)
 	if(len(eyes) == 0):
@@ -26,7 +26,7 @@ def findRightEye(conn, data):
 		conn.close()
 
 def findLeftEye(conn, data):
-	roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
+	#roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
 	eyes = leftEyeCascade.detectMultiScale(data[0])
 	#print 'Left Eye:', len(eyes)
 	if(len(eyes) == 0):
@@ -39,7 +39,7 @@ def findLeftEye(conn, data):
 
 def findMouth(conn, data):
 	mouth = mouthCascade.detectMultiScale(data[0])
-        roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
+        #roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
         if(len(mouth) == 0):
             conn.send([0,0,0,0])
             conn.close()
