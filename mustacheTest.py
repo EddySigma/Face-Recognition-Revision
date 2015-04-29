@@ -20,17 +20,17 @@ noseCascade = cv2.CascadeClassifier(noseCascadeFilePath)
 #-----------------------------------------------------------------------------
  
 # Load our overlay image: mustache.png
-imgMustache = cv2.imread('alien.png',-1)
+imgMustache = cv2.imread('cheesy.png',-1) #need this
  
 # Create the mask for the mustache
-orig_mask = imgMustache[:,:,3]
+orig_mask = imgMustache[:,:,3] #need this
  
 # Create the inverted mask for the mustache
 orig_mask_inv = cv2.bitwise_not(orig_mask)
  
 # Convert mustache image to BGR
 # and save the original image size (used later when re-sizing the image)
-imgMustache = imgMustache[:,:,0:3]
+imgMustache = imgMustache[:,:,0:3] #need this
 origMustacheHeight, origMustacheWidth = imgMustache.shape[:2]
  
 #-----------------------------------------------------------------------------
