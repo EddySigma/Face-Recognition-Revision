@@ -19,12 +19,18 @@ def detectEmotion(conn, data):
     mouth_h = data[3]
     face_w = data[4]
     face_h = data[5]
-    if(mouth_w != 0 and mouth_h != 0):
-        print 'ratio', float(face_w) / mouth_w
+   # if(mouth_w != 0 and mouth_h != 0):
+    #    print 'ratio', float(face_w) / mouth_w
+
+    if(hasRight == False or hasLeft == False):
+        print 'winky'
     if(mouth_w != 0 and mouth_h != 0):
         if(float(face_w) / mouth_w < 2.20):
             print 'smile!'
         else:
             print 'neutral'
+    else:
+        print 'ALIEN!'
     conn.send(happy)
+    sleep(25)
     conn.close()
