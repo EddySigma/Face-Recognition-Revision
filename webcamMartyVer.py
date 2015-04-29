@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 from multiprocessing import Process, Pipe
 import thread
+from emotionalAlgorithms import detectEmotion
 
 #print '1'
 mouthCascade = cv2.CascadeClassifier('haarcascade_smile.xml')
@@ -23,6 +24,7 @@ def findRightEye(conn, data):
 	else:
 		for (x, y, w, h) in eyes:
 		        conn.send([x,y,x+w,y+h])
+                      #  print "Rh:",h
 		conn.close()
 
 def findLeftEye(conn, data):
@@ -35,6 +37,7 @@ def findLeftEye(conn, data):
 	else:
 		for(x,y,w,h) in eyes:
 			conn.send([x,y,x+w,y+h])
+                     #   print 'Lh:', h
 		conn.close()
 
 def findMouth(conn, data):
@@ -46,6 +49,8 @@ def findMouth(conn, data):
         else:
             for (x, y, w, h) in mouth:
                 conn.send([x,y,x+w,y+h])
+               # print "w:",w, "h:",h
+                break
             conn.close()
 
 def findFace(frame, gray):
@@ -74,10 +79,11 @@ if __name__ == '__main__':
     right_eye_parent_conn, right_eye_child_conn = Pipe()
     left_eye_parent_conn, left_eye_child_conn = Pipe() # this creates a pipe
     mouth_parent_conn, mouth_child_conn = Pipe()
+    emotion_parent_conn, emotion_child_conn = Pipe()
     while True:
         #parent_conn, child_conn = Pipe()
         ret, frame = video_capture.read() # get video or access camera?
-        
+        feature_data = []       
         if (ret):       # If an invalid frame is found then stop!
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) # video grayscale?
             faces = faceCascade.detectMultiScale(gray, 1.2, 6, minSize = (60,60)) # searches video for faces
@@ -95,6 +101,7 @@ if __name__ == '__main__':
                 data = [roi_gray,x,y,w,h]
                 #print data
                 mouth_data = [mouth_roi_gray,x,y,w,h]
+
 		#print 'here'
                 R = Process(target=findRightEye, args=(right_eye_child_conn, data,))
 		L = Process(target=findLeftEye, args=(left_eye_child_conn, data,))
@@ -112,9 +119,28 @@ if __name__ == '__main__':
                 cv2.rectangle(roi_color,(eye_frame[4],eye_frame[5]),(eye_frame[6],eye_frame[7]),(0,255,0),2)
                 cv2.rectangle(roi_color,(mouth_frame[0],mouth_frame[1]),(mouth_frame[2],mouth_frame[3]),(0,255,0),2)
 
+                if(eye_frame[1] == 0):
+                    feature_data.append(False)
+                else:
+                    feature_data.append(True)
+                if(eye_frame[4] == 0):
+                    feature_data.append(False)
+                else:
+                    feature_data.append(True)
+
+                feature_data.append(mouth_frame[2] - mouth_frame[0])
+                feature_data.append(mouth_frame[3] - mouth_frame[1])
+                feature_data.append(w)
+                feature_data.append(h)
+                E = Process(target=detectEmotion, args=(emotion_child_conn, feature_data))
+                E.start()
+
+                picture_path = emotion_parent_conn.recv()
+               # print picture_path
                 R.terminate()
                 L.terminate()
                 M.terminate()
+                E.terminate()
         else:
             break
 
