@@ -32,22 +32,22 @@ while True:
 		alien_height = h
 		alien_width = w
 		# Center the happy face
-		x1 = x - (alien_width/4)
-		x2 = x + w + (alien_width/4)
-		y1 = y + h - (alien_height/2)
-		y2 = y + h + (alien_height/2)
+		#x1 = x - (alien_width/4)
+		#x2 = x + w + (alien_width/4)
+		#y1 = y + h - (alien_height/2)
+		#y2 = y + h + (alien_height/2)
 		# Check for clipping
-		if x1 < 0:
-			x1 = 0
-		if y1 < 0:
-			y1 = 0
-		if x2 > w:
-			x2 = w
-		if y2 > h:
-			y2 = h
+		#if x1 < 0:
+		#	x1 = 0
+		#if y1 < 0:
+		#	y1 = 0
+		#if x2 > w:
+		#	x2 = w
+		#if y2 > h:
+		#	y2 = h
 		# Re-calculates width and height of happy face
-		alien_width = x2 - x1
-		alien_height = y2 - y1
+		#alien_width = x2 - x1
+		#alien_height = y2 - y1
 		# Resize the original hapy face and the maske to the happy face
 		# sizes from above
 		alien = cv2.resize(alien_img, (alien_width,alien_height), interpolation = cv2.INTER_AREA)
