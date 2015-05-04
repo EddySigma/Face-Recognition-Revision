@@ -1,7 +1,6 @@
 import sys
 import cv2
 import numpy as np
-from faceAddition import addFace
 from multiprocessing import Process, Pipe
 import thread
 
@@ -15,6 +14,7 @@ alien = 'faces/alien.png'
 
 
 def detectEmotion(conn, data):
+   
    # print data
     hasRight = data[0]
     hasLeft = data[1]
@@ -25,20 +25,30 @@ def detectEmotion(conn, data):
    # if(mouth_w != 0 and mouth_h != 0):
     #    print 'ratio', float(face_w) / mouth_w
 
+    if(mouth_w != 0 and mouth_h != 0):
+	    if(float(face_w) / mouth_w < 2.20):
+			#print happy
+			conn.send(happy)
+	    else:
+			#print neutral
+			conn.send(neutral)
+    else:
+		#print alien
+		conn.send(alien)
+    conn.close()
+'''
     if(hasRight == False or hasLeft == False):
         print 'winky'
-        addFace(winky)
+	conn.send(winky)
     
     elif(mouth_w != 0 and mouth_h != 0):
         if(float(face_w) / mouth_w < 2.20):
             print 'smile!'
-            addFace(happy)
+	    conn.send(happy)
         else:
             print 'neutral'
-            addFace(neutral)
+            conn.send(neutral)
     else:
         print 'ALIEN!'
-        addFace(neutral)
-    conn.send(happy)
-    sleep(25)
-    conn.close()
+	conn.send(alien)
+'''

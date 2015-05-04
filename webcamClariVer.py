@@ -4,6 +4,7 @@ import numpy as np
 from multiprocessing import Process, Pipe
 import thread
 from emotionalAlgorithms import detectEmotion
+from faceAddition import addFace
 
 #print '1'
 mouthCascade = cv2.CascadeClassifier('haarcascade_smile.xml')
@@ -66,7 +67,6 @@ def findFace(frame, gray):
 	except:
 		print 'Failed eye thread'
 
-
 # The real program starts to run at this point.
 if __name__ == '__main__':
     faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml') # opens face data file
@@ -81,6 +81,7 @@ if __name__ == '__main__':
     left_eye_parent_conn, left_eye_child_conn = Pipe() # this creates a pipe
     mouth_parent_conn, mouth_child_conn = Pipe()
     emotion_parent_conn, emotion_child_conn = Pipe()
+    nose_parent_conn, nose_child_conn = Pipe()
     while True:
         #parent_conn, child_conn = Pipe()
         ret, frame = video_capture.read() # get video or access camera?
@@ -92,6 +93,7 @@ if __name__ == '__main__':
             for (x,y,w,h) in faces:
                 cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2) # frame for the face: blue
                 roi_gray = gray[y:y+(h/2), x:x+w] # Area to search for the eyes. // this is half the face frame.
+                nose_roi_gray = gray[y:y+h,x:x+w]
                 roi_color = frame[y:y+h,x:x+w]
                 #print 'stuff'
                 mouth_roi_gray = gray[(y+h)/2:y+h,x:x+w]
@@ -103,15 +105,18 @@ if __name__ == '__main__':
                 #print data
                 mouth_data = [mouth_roi_gray,x,y,w,h]
 
-		#print 'here'
+                #print 'here'
                 R = Process(target=findRightEye, args=(right_eye_child_conn, data,))
-		L = Process(target=findLeftEye, args=(left_eye_child_conn, data,))
+                L = Process(target=findLeftEye, args=(left_eye_child_conn, data,))
                 M = Process(target=findMouth, args=(mouth_child_conn, mouth_data,))
-		#print 'here2'
+
+
+                #print 'here2'
                 M.start()
                 R.start()
-		L.start()
-		#print 'here3'
+                L.start()
+
+                #print 'here3'
                 eye_frame = right_eye_parent_conn.recv()
                 eye_frame += left_eye_parent_conn.recv()
                 mouth_frame = mouth_parent_conn.recv()
@@ -137,11 +142,18 @@ if __name__ == '__main__':
                 E.start()
 
                 picture_path = emotion_parent_conn.recv()
-               # print picture_path
+                print picture_path
+                data = [nose_roi_gray, x,y,w,h]
+                addFace(data, picture_path)
+                #N = Process(target=addFace, args=(nose_child_conn, data, picture_path))
+                print 'sdonf'
+                #N.start()
+                # print picture_path
                 R.terminate()
                 L.terminate()
                 M.terminate()
                 E.terminate()
+                #N.terminate()
         else:
             break
 
