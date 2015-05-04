@@ -22,7 +22,7 @@ noseCascade = cv2.CascadeClassifier(noseCascadeFilePath)
 #-----------------------------------------------------------------------------
  
 # Load our overlay image: mustache.png
-imgHappy = cv2.imread('faces/glasses.png',-1) #need this
+imgHappy = cv2.imread('faces/winky.png',-1) #need this
 
  
 # Create the mask for the mustache

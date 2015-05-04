@@ -5,13 +5,11 @@ from faceAddition import addFace
 from multiprocessing import Process, Pipe
 import thread
 
-winky = 'faces/winky.png'
-neutral = 'faces/neutral.png'
 happy = 'faces/happy.png'
+glasses = 'faces/glasses.png'
 alien = 'faces/alien.png'
-#glasses = 'faces/glasses.png'
-#tongue = 'faces/tongue.png'
-#cheesy = 'faces/cheesy.png'
+tongue = 'faces/tongue.png'
+cheesy = 'faces/cheesy.png'
 
 
 def detectEmotion(conn, data):
