@@ -9,6 +9,7 @@ from emotionalAlgorithms import detectEmotion
 mouthCascade = cv2.CascadeClassifier('haarcascade_smile.xml')
 rightEyeCascade = cv2.CascadeClassifier('right_eye.xml')
 leftEyeCascade = cv2.CascadeClassifier('left_eye.xml')
+noseCascade = cv2.CascadeClassifier('haarcascade_mcs_nose.xml')
 x_offset=y_offset=50
 
 # To kill the memory leaks when running this file, run this command
