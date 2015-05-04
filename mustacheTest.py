@@ -10,19 +10,19 @@ baseCascadePath = "/usr/local/share/OpenCV/haarcascades/"
 # xml files describing our haar cascade classifiers
 faceCascadeFilePath = baseCascadePath + "haarcascade_frontalface_default.xml"
 noseCascadeFilePath = baseCascadePath + "haarcascade_mcs_nose.xml"
-mouthCascadeFilePath = baseCascadePath + "haarcascade_mcs_nose.xml"
+
  
 # build our cv2 Cascade Classifiers
 faceCascade = cv2.CascadeClassifier(faceCascadeFilePath)
 noseCascade = cv2.CascadeClassifier(noseCascadeFilePath)
-mouthCascade = cv2.CascadeClassifier(mouthCascadeFilePath)
+
  
 #-----------------------------------------------------------------------------
 #       Load and configure mustache (.png with alpha transparency)
 #-----------------------------------------------------------------------------
  
 # Load our overlay image: mustache.png
-imgHappy = cv2.imread('happy.png',-1) #need this
+imgHappy = cv2.imread('faces/glasses.png',-1) #need this
 
  
 # Create the mask for the mustache
@@ -75,7 +75,7 @@ while True:
             #cv2.rectangle(roi_color,(nx,ny),(nx+nw,ny+nh),(255,0,0),2)
  
             # The mustache should be three times the width of the nose
-            happyWidth =  6 * nw
+            happyWidth =  8 * nw
             happyHeight = happyWidth * origHappyHeight / origHappyWidth
  
             # Center the mustache on the bottom of the nose
