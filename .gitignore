@@ -1,1 +1,1 @@
-hello.py apikey.cfg
+hello.py apikey.cfg *.pyc *.py~
