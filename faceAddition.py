@@ -8,7 +8,7 @@ def addFace(data, img):
 	print 'suff'
 	nose = noseCascade.detectMultiScale(data[0])
 	# Load our overlay image: img
-	image = cv2.LoadImage('/home/idk/code/cst/Face-Recognition/faces/happy.png',-1)
+	image = cv2.imread('happy.png',-1)
 	print 'image',image
 	cv2.imshow('image', image)
  
