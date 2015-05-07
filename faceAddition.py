@@ -5,15 +5,22 @@ import numpy as np
 noseCascade = cv2.CascadeClassifier('haarcascade_mcs_nose.xml')
 
 def addFace(data, img):
+	#print data[0]
 	print 'suff'
-	nose = noseCascade.detectMultiScale(data[0])
+	gray = cv2.cvtColor(data[0], cv2.COLOR_BGR2GRAY)
+	roi_gray = gray[data[2]:data[2]+data[4],data[1]:data[1]+data[3]]
+	roi_color = data[0][data[2]:data[2]+data[4],data[1]:data[1]+data[3]]
+
+	nose = noseCascade.detectMultiScale(gray)
 	# Load our overlay image: img
 	image = cv2.imread('happy.png',-1)
 	print 'image',image
 	cv2.imshow('image', image)
+	cover = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+	ret, orig_mask = cv2.threshold(cover, 10, 255, cv2.THRESH_BINARY)
  
 	# Create the mask for the image
-	orig_mask = image[:,:,3] #need this
+	#orig_mask = image[:,:,3] #need this
  
 	# Create the inverted mask for the image
 	orig_mask_inv = cv2.bitwise_not(orig_mask)
@@ -55,7 +62,9 @@ def addFace(data, img):
  		mask_inv = cv2.resize(orig_mask_inv, (imageWidth, imageHeight), interpolation = cv2.INTER_AREA)
  	
  		# take ROI for image from background equal to size of mustache image
- 		roi = data[0][y1:y2, x1:x2]
+ 		roi = roi_color[y1:y2, x1:x2]
+		print 'roi', roi
+		print 'roi_color', roi_color
  		# roi_bg contains the original image only where the mustache is not
  		# in the region that is the size of the mustache.
  		roi_bg = cv2.bitwise_and(roi,roi,mask = mask_inv)
@@ -64,7 +73,7 @@ def addFace(data, img):
  		# join the roi_bg and roi_fg
  		dst = cv2.add(roi_bg,roi_fg)
  		# place the joined image, saved to dst back over the original image
- 		data[0][y1:y2, x1:x2] = dst
+ 		roi_color[y1:y2, x1:x2] = dst
 		#conn.close()
  
    

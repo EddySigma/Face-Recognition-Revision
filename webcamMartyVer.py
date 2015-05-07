@@ -136,7 +136,7 @@ if __name__ == '__main__':
                 E.start()
 
                 picture_path = emotion_parent_conn.recv()
-               # print picture_path
+                print picture_path
                 R.terminate()
                 L.terminate()
                 M.terminate()
