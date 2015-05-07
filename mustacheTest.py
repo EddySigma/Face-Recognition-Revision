@@ -10,11 +10,12 @@ baseCascadePath = "/usr/local/share/OpenCV/haarcascades/"
 # xml files describing our haar cascade classifiers
 faceCascadeFilePath = baseCascadePath + "haarcascade_frontalface_default.xml"
 noseCascadeFilePath = baseCascadePath + "haarcascade_mcs_nose.xml"
-
+#mouthCascadeFilePath = baseCascadePath + "haarcascade_mcs_mouth.xml"
  
 # build our cv2 Cascade Classifiers
 faceCascade = cv2.CascadeClassifier(faceCascadeFilePath)
 noseCascade = cv2.CascadeClassifier(noseCascadeFilePath)
+#mouthCascade = cv2.CascadeClassifier(mouthCascadeFilePath)
 
  
 #-----------------------------------------------------------------------------
@@ -70,6 +71,8 @@ while True:
  
         # Detect a nose within the region bounded by each face (the ROI)
         nose = noseCascade.detectMultiScale(roi_gray)
+        # Detect a mouth within the region bounded by each face (the ROI)
+        # mouth = mouthCascade.detectMultiScale(roi_gray)
  
         for (nx,ny,nw,nh) in nose:
             # Un-comment the next line for debug (draw box around the nose)
