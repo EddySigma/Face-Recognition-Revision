@@ -144,7 +144,7 @@ if __name__ == '__main__':
                 picture_path = emotion_parent_conn.recv()
                 print picture_path
                 data = [frame, x,y,w,h]
-                addFace(data, picture_path)
+                frame = addFace(data, picture_path)
                 #N = Process(target=addFace, args=(nose_child_conn, data, picture_path))
                 print 'sdonf'
                 #N.start()
