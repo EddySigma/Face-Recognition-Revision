@@ -60,8 +60,10 @@ def findFace(frame, gray):
 	
 	eye_roi_color = frame[y:y+h, x:x+w]
 	faces = faceCascade.detectMultiScale(gray, 1.2, 6, minSize = (60, 60))
+	'''
 	for (x,y,w,h) in faces:
 		cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
+	'''
 	try:
 		thread.start_new_thread(findEyes, (gray, eye_roi_color))
 	except:
@@ -91,7 +93,7 @@ if __name__ == '__main__':
             faces = faceCascade.detectMultiScale(gray, 1.2, 6, minSize = (60,60)) # searches video for faces
 
             for (x,y,w,h) in faces:
-                cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2) # frame for the face: blue
+                #cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2) # frame for the face: blue
                 roi_gray = gray[y:y+(h/2), x:x+w] # Area to search for the eyes. // this is half the face frame.
                 nose_roi_gray = gray[y:y+h,x:x+w]
                 roi_color = frame[y:y+h,x:x+w]
@@ -121,9 +123,11 @@ if __name__ == '__main__':
                 eye_frame += left_eye_parent_conn.recv()
                 mouth_frame = mouth_parent_conn.recv()
                 #print eye_frame
+                '''
                 cv2.rectangle(roi_color,(eye_frame[0],eye_frame[1]),(eye_frame[2],eye_frame[3]),(0,255,0),2)
                 cv2.rectangle(roi_color,(eye_frame[4],eye_frame[5]),(eye_frame[6],eye_frame[7]),(0,255,0),2)
                 cv2.rectangle(roi_color,(mouth_frame[0],mouth_frame[1]),(mouth_frame[2],mouth_frame[3]),(0,255,0),2)
+                '''
 
                 if(eye_frame[1] == 0):
                     feature_data.append(False)

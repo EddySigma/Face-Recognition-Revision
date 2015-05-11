@@ -8,7 +8,7 @@ import numpy as np
 
 def addFace(data, img):
 	noseCascade = cv2.CascadeClassifier('haarcascade_mcs_nose.xml')
-	imHappy = cv2.imread('happy.png', -1)
+	imHappy = cv2.imread(img, -1)
 	orig_mask = imHappy[:,:,3]
 	orig_mask_inv = cv2.bitwise_not(orig_mask)
 	imHappy = imHappy[:,:,0:3]
