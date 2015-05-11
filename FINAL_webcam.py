@@ -66,7 +66,7 @@ def findFace(frame, gray):
 		print 'Failed eye thread'
 
 def saveImage(image):
-	cv2.imwrite('/home/idk/code/cst/Face-Recognition/saved'+str(datetime.datetime.now())+'.png', image)
+	cv2.imwrite('/home/idk/code/cst/Face-Recognition/saved/'+str(datetime.datetime.now())+'.png', image)
 
 # The real program starts to run at this point.
 if __name__ == '__main__':
