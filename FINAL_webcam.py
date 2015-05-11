@@ -1,10 +1,12 @@
 import sys
+import os
 import cv2
 import numpy as np
 from multiprocessing import Process, Pipe
 import thread
-from emotionalAlgorithms import detectEmotion
-from faceAddition import addFace
+from FINAL_algorithm import detectEmotion
+from FINAL_addition import addFace
+import datetime
 
 #print '1'
 mouthCascade = cv2.CascadeClassifier('haarcascade_smile.xml')
@@ -58,14 +60,13 @@ def findFace(frame, gray):
 	
 	eye_roi_color = frame[y:y+h, x:x+w]
 	faces = faceCascade.detectMultiScale(gray, 1.2, 6, minSize = (60, 60))
-	'''
-	for (x,y,w,h) in faces:
-		cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
-	'''
 	try:
 		thread.start_new_thread(findEyes, (gray, eye_roi_color))
 	except:
 		print 'Failed eye thread'
+
+def saveImage(image):
+	cv2.imwrite('/home/idk/code/cst/Face-Recognition/saved'+str(datetime.datetime.now())+'.png', image)
 
 # The real program starts to run at this point.
 if __name__ == '__main__':
@@ -82,6 +83,9 @@ if __name__ == '__main__':
     mouth_parent_conn, mouth_child_conn = Pipe()
     emotion_parent_conn, emotion_child_conn = Pipe()
     nose_parent_conn, nose_child_conn = Pipe()
+    counter = 0
+    path = None
+    prepath = None
     while True:
         #parent_conn, child_conn = Pipe()
         ret, frame = video_capture.read() # get video or access camera?
@@ -92,7 +96,6 @@ if __name__ == '__main__':
             faces = faceCascade.detectMultiScale(gray, 1.2, 6, minSize = (60,60)) # searches video for faces
 
             for (x,y,w,h) in faces:
-                #cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2) # frame for the face: blue
                 roi_gray = gray[y:y+(h/2), x:x+w] # Area to search for the eyes. // this is half the face frame.
                 nose_roi_gray = gray[y:y+h,x:x+w]
                 roi_color = frame[y:y+h,x:x+w]
@@ -122,23 +125,8 @@ if __name__ == '__main__':
                 eye_frame.append(left_eye_parent_conn.recv())
                 mouth_frame = mouth_parent_conn.recv()
                 #print eye_frame
-                '''
-                cv2.rectangle(roi_color,(eye_frame[0],eye_frame[1]),(eye_frame[2],eye_frame[3]),(0,255,0),2)
-                cv2.rectangle(roi_color,(eye_frame[4],eye_frame[5]),(eye_frame[6],eye_frame[7]),(0,255,0),2)
-                cv2.rectangle(roi_color,(mouth_frame[0],mouth_frame[1]),(mouth_frame[2],mouth_frame[3]),(0,255,0),2)
-                '''
                 feature_data.append(eye_frame[0])
                 feature_data.append(eye_frame[1])
-                '''
-                if(eye_frame[1] == 0):
-                    feature_data.append(False)
-                else:
-                    feature_data.append(True)
-                if(eye_frame[4] == 0):
-                    feature_data.append(False)
-                else:
-                    feature_data.append(True)
-                '''
 
                 feature_data.append(mouth_frame[0])
                 feature_data.append(mouth_frame[1])
@@ -146,11 +134,22 @@ if __name__ == '__main__':
                 feature_data.append(h)
                 E = Process(target=detectEmotion, args=(emotion_child_conn, feature_data))
                 E.start()
-
+                
                 picture_path = emotion_parent_conn.recv()
+                if(counter == 0):
+                    prepath = picture_path
+
+                if(counter == 5):
+                    prepath = picture_path
+                    counter = 0
+                else:
+                    counter += 1
+
+                print counter
+                
                 #print picture_path
                 data = [frame, x,y,w,h]
-                frame = addFace(data, picture_path)
+                frame = addFace(data, prepath)
                 #N = Process(target=addFace, args=(nose_child_conn, data, picture_path))
                 #print 'sdonf'
                 #N.start()
@@ -170,35 +169,11 @@ if __name__ == '__main__':
             cv2.destroyAllWindows()
             WaitKey(1)
             break
+        if cv2.waitKey(1) & 0xFF == ord('s'):
+            saveImage(frame)
+            print 'saved'
 
 
-'''
-while True:
-	ret, frame = video_capture.read()
-	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-		#frame[y:y+h,x:x+w] = smile
-		
-        #mouth_roi_color = frame[y:y+h, x:x+w]
-		#eyes = eyeCascade.detectMultiScale(roi_gray)
-        y_value = y-(2*3/h)
-        #mouth_roi_gray = gray[y_value:y+h, x:x+w]
-		#mouth = mouthCascade.detectMultiScale(mouth_roi_gray)
-		
-        try:
-            thread.start_new_thread(findEyes, (roi_gray, eye_roi_color))
-        except:
-            #print 'Failed eye thread'
-        
-		try:
-			thread.start_new_thread(findMouth, (mouth_roi_gray, mouth_roi_color))
-		except:
-			#print 'Failed mouth thread'
-        
-		##print 'eyes:', len(eyes)
-			
-cv2.imshow('Video', frame)
-if cv2.waitKey(1) & 0xFF == ord('q'):
-    break '''
 	
 cv2.VideoCapture(0).release()
 cv2.destroyAllWindows()
