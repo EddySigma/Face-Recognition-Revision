@@ -21,7 +21,7 @@ x_offset=y_offset=50
 def findRightEye(conn, data):
        # roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
 	eyes = rightEyeCascade.detectMultiScale(data[0])
-	#print 'Right Eye:', len(eyes)
+	print 'Right Eye:', len(eyes)
 	if(len(eyes) == 0):
 		conn.send(False)
 		conn.close()
@@ -123,6 +123,7 @@ if __name__ == '__main__':
                 #print 'here3'
                 eye_frame.append(right_eye_parent_conn.recv())
                 eye_frame.append(left_eye_parent_conn.recv())
+                print eye_frame
                 mouth_frame = mouth_parent_conn.recv()
                 #print eye_frame
                 feature_data.append(eye_frame[0])
@@ -167,7 +168,6 @@ if __name__ == '__main__':
         if cv2.waitKey(1) & 0xFF == ord('q'):
             cv2.VideoCapture(0).release
             cv2.destroyAllWindows()
-            WaitKey(1)
             break
         if cv2.waitKey(1) & 0xFF == ord('s'):
             saveImage(frame)
