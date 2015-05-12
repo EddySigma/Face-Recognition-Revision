@@ -8,6 +8,7 @@ winky = 'faces/winky.png'
 neutral = 'faces/neutral.png'
 happy = 'faces/happy.png'
 alien = 'faces/alien.png'
+kissy = 'faces/kissy.png'
 
 
 def detectEmotion(conn, data):
@@ -24,14 +25,17 @@ def detectEmotion(conn, data):
 
     if(mouth_w != 0 and mouth_h != 0):
 	    print float(face_w) / mouth_w
+	    print float(face_h) / mouth_h
 		
 	    if(float(face_w) / mouth_w < 2.20):
 			print 'happy'
 			conn.send(happy)
+	    if(float(face_w) / mouth_w > 3.40):
+	        conn.send(kissy)
 	    else:
 			print 'neutral'
 			conn.send(neutral)
-    if(data[0] == False or data[1] == False):
+    elif(data[0] == False or data[1] == False):
         print 'winky'
         conn.send(winky)
     else:
