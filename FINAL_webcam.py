@@ -1,3 +1,8 @@
+# Filename: FINAL_webcam.py
+# Description: Main file that runs the whole program. Opens all of the necessary 
+# cascades to detect the face, eyes, nose, and mouth. Passes all the data to detect
+# the emotion and then adds the corresponding emoji.  
+
 import sys
 import os
 import cv2

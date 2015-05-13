@@ -1,3 +1,7 @@
+# Filename: FINAL_algorithm.py
+# Description: This file holds our emotion algorithm. We are able to detect the emotion 
+# expressed by the user in front of the webcam.
+
 import sys
 import cv2
 import numpy as np
@@ -14,6 +18,7 @@ kissy = 'faces/kissy.png'
 def detectEmotion(conn, data):
    
     print data
+    # data for right and left eye, mouth width and height, face width and height
     hasRight = data[0]
     hasLeft = data[1]
     mouth_w = data[2]
@@ -27,19 +32,19 @@ def detectEmotion(conn, data):
 	    print float(face_w) / mouth_w
 	    print float(face_h) / mouth_h
 		
-	    if(float(face_w) / mouth_w < 2.20):
-			print 'happy'
+	    if(float(face_w) / mouth_w < 2.20):	# checks for ratio between mouth and face
+			print 'happy'					# and sends the happy image
 			conn.send(happy)
-	    if(float(face_w) / mouth_w > 3.40):
-	        conn.send(kissy)
-	    else:
-			print 'neutral'
-			conn.send(neutral)
-    elif(data[0] == False or data[1] == False):
-        print 'winky'
-        conn.send(winky)
+	    if(float(face_w) / mouth_w > 3.40):	# checks for ratio between mouth and face 
+	        conn.send(kissy)					# and sends the kissy image
+	    else:	
+			print 'neutral'	   # sends neutral if ration between face and mouth
+			conn.send(neutral) # is normal
+    elif(data[0] == False or data[1] == False):	# checks to see if either the left or
+        print 'winky'						    # right eye are not found and sends the
+        conn.send(winky)							# winky image
     else:
-		print 'alien'
-		conn.send(alien)
+		print 'alien'	 # sends the alien image if it doesn't recognize 
+		conn.send(alien)	 # of the emotions
     conn.close()
 
