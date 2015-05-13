@@ -13,7 +13,7 @@ from FINAL_algorithm import detectEmotion
 from FINAL_addition import addFace
 import datetime
 
-#print '1'
+## print '1'
 mouthCascade = cv2.CascadeClassifier('cascades/haarcascade_smile.xml')
 rightEyeCascade = cv2.CascadeClassifier('cascades/right_eye.xml')
 leftEyeCascade = cv2.CascadeClassifier('cascades/left_eye.xml')
@@ -26,25 +26,25 @@ x_offset=y_offset=50
 def findRightEye(conn, data):
        # roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
 	eyes = rightEyeCascade.detectMultiScale(data[0])
-	print 'Right Eye:', len(eyes)
+	# print 'Right Eye:', len(eyes)
 	if(len(eyes) == 0):
 		conn.send(False)
 		conn.close()
 	else:
 		conn.send(True)
-                      #  print "Rh:",h
+                      #  # print "Rh:",h
 		conn.close()
 
 def findLeftEye(conn, data):
 	#roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
 	eyes = leftEyeCascade.detectMultiScale(data[0])
-	#print 'Left Eye:', len(eyes)
+	## print 'Left Eye:', len(eyes)
 	if(len(eyes) == 0):
 		conn.send(False)
 		conn.close()
 	else:
 		conn.send(True)
-                     #   print 'Lh:', h
+                     #   # print 'Lh:', h
 		conn.close()
 
 def findMouth(conn, data):
@@ -56,7 +56,7 @@ def findMouth(conn, data):
         else:
             for (x, y, w, h) in mouth:
                 conn.send([w,h])
-               # print "w:",w, "h:",h
+               # # print "w:",w, "h:",h
                 break
             conn.close()
 
@@ -104,33 +104,33 @@ if __name__ == '__main__':
                 roi_gray = gray[y:y+(h/2), x:x+w] # Area to search for the eyes. // this is half the face frame.
                 nose_roi_gray = gray[y:y+h,x:x+w]
                 roi_color = frame[y:y+h,x:x+w]
-                #print 'stuff'
+                ## print 'stuff'
                 mouth_roi_gray = gray[(y+h)/2:y+h,x:x+w]
-                #print mouth_roi_gray
+                ## print mouth_roi_gray
 
 
                 # thread that finds eyes
                 data = [roi_gray,x,y,w,h]
-                #print data
+                ## print data
                 mouth_data = [mouth_roi_gray,x,y,w,h]
 
-                #print 'here'
+                ## print 'here'
                 R = Process(target=findRightEye, args=(right_eye_child_conn, data,))
                 L = Process(target=findLeftEye, args=(left_eye_child_conn, data,))
                 M = Process(target=findMouth, args=(mouth_child_conn, mouth_data,))
 
 
-                #print 'here2'
+                ## print 'here2'
                 M.start()
                 R.start()
                 L.start()
 
-                #print 'here3'
+                ## print 'here3'
                 eye_frame.append(right_eye_parent_conn.recv())
                 eye_frame.append(left_eye_parent_conn.recv())
-                print eye_frame
+                # print eye_frame
                 mouth_frame = mouth_parent_conn.recv()
-                #print eye_frame
+                ## print eye_frame
                 feature_data.append(eye_frame[0])
                 feature_data.append(eye_frame[1])
 
@@ -151,15 +151,15 @@ if __name__ == '__main__':
                 else:
                     counter += 1
 
-                print counter
+                # print counter
                 
-                #print picture_path
+                ## print picture_path
                 data = [frame, x,y,w,h]
                 frame = addFace(data, prepath)
                 #N = Process(target=addFace, args=(nose_child_conn, data, picture_path))
-                #print 'sdonf'
+                ## print 'sdonf'
                 #N.start()
-                # print picture_path
+                # # print picture_path
                 R.terminate()
                 L.terminate()
                 M.terminate()
@@ -176,7 +176,7 @@ if __name__ == '__main__':
             break
         if cv2.waitKey(1) & 0xFF == ord('s'):
             saveImage(frame)
-            print 'saved'
+            # print 'saved'
 
 
 	
