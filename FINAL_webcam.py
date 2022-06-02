@@ -46,29 +46,28 @@ def findLeftEye(conn, data):
 		conn.send(True)
                      #   # print 'Lh:', h
 		conn.close()
+        
 
 def findMouth(conn, data):
-	mouth = mouthCascade.detectMultiScale(data[0])
-        #roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
-        if(len(mouth) == 0):
-            conn.send([0,0,0,0])
-            conn.close()
-        else:
-            for (x, y, w, h) in mouth:
-                conn.send([w,h])
-               # # print "w:",w, "h:",h
-                break
-            conn.close()
+    mouth = mouthCascade.detectMultiScale(data[0])
+    roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
+    if(len(mouth) == 0):
+        conn.send([0,0,0,0])
+        conn.close()
+    else:
+        for (x, y, w, h) in mouth:
+            conn.send([w,h])
+            # # print "w:",w, "h:",h
+            break
+        conn.close()
 
 def findFace(frame, gray):
-	
-	
 	eye_roi_color = frame[y:y+h, x:x+w]
 	faces = faceCascade.detectMultiScale(gray, 1.2, 6, minSize = (60, 60))
 	try:
-		thread.start_new_thread(findEyes, (gray, eye_roi_color))
+		_thread.start_new_thread(findEyes, (gray, eye_roi_color))
 	except:
-		print 'Failed eye thread'
+		print ('Failed eye thread')
 
 def saveImage(image):
 	cv2.imwrite('saved/'+str(datetime.datetime.now())+'.png', image)
