@@ -8,7 +8,7 @@ import os
 import cv2
 import numpy as np
 from multiprocessing import Process, Pipe
-import thread
+import _thread
 from FINAL_algorithm import detectEmotion
 from FINAL_addition import addFace
 import datetime
