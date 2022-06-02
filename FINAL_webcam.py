@@ -3,48 +3,47 @@
 # cascades to detect the face, eyes, nose, and mouth. Passes all the data to detect
 # the emotion and then adds the corresponding emoji.  
 
-import sys
-import os
 import cv2
-import numpy as np
 from multiprocessing import Process, Pipe
 import _thread
-from FINAL_algorithm import detectEmotion
+from FINAL_algorithm import detectEmotion, detectEmotion2
 from FINAL_addition import addFace
 import datetime
 
-## print '1'
+# is there a better way to load multiple files?
 mouthCascade = cv2.CascadeClassifier('cascades/haarcascade_smile.xml')
 rightEyeCascade = cv2.CascadeClassifier('cascades/right_eye.xml')
 leftEyeCascade = cv2.CascadeClassifier('cascades/left_eye.xml')
 noseCascade = cv2.CascadeClassifier('cascades/haarcascade_mcs_nose.xml')
-x_offset=y_offset=50
+
+x_offset = 50 # why do we need these?
+y_offset = 50
 
 # To kill the memory leaks when running this file, run this command
 # pkill -f webcamMartyVer.py
 
 def findRightEye(conn, data):
-       # roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
+    #roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
 	eyes = rightEyeCascade.detectMultiScale(data[0])
-	# print 'Right Eye:', len(eyes)
+	#print 'Right Eye:', len(eyes)
 	if(len(eyes) == 0):
 		conn.send(False)
 		conn.close()
 	else:
 		conn.send(True)
-                      #  # print "Rh:",h
+        #print "Rh:",h
 		conn.close()
 
 def findLeftEye(conn, data):
 	#roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
 	eyes = leftEyeCascade.detectMultiScale(data[0])
-	## print 'Left Eye:', len(eyes)
+	#print 'Left Eye:', len(eyes)
 	if(len(eyes) == 0):
 		conn.send(False)
 		conn.close()
 	else:
 		conn.send(True)
-                     #   # print 'Lh:', h
+        #print 'Lh:', h
 		conn.close()
         
 
@@ -57,7 +56,7 @@ def findMouth(conn, data):
     else:
         for (x, y, w, h) in mouth:
             conn.send([w,h])
-            # # print "w:",w, "h:",h
+            #print "w:",w, "h:",h
             break
         conn.close()
 
@@ -67,7 +66,7 @@ def findFace(frame, gray):
 	try:
 		_thread.start_new_thread(findEyes, (gray, eye_roi_color))
 	except:
-		print ('Failed eye thread')
+		print('Failed eye thread')
 
 def saveImage(image):
 	cv2.imwrite('saved/'+str(datetime.datetime.now())+'.png', image)
@@ -87,14 +86,16 @@ if __name__ == '__main__':
     mouth_parent_conn, mouth_child_conn = Pipe()
     emotion_parent_conn, emotion_child_conn = Pipe()
     nose_parent_conn, nose_child_conn = Pipe()
+
     counter = 0
     path = None
     prepath = None
+
     while True:
         #parent_conn, child_conn = Pipe()
         ret, frame = video_capture.read() # get video or access camera?
-        feature_data = []      
-        eye_frame = []
+        face_features = dict()      
+        #eye_frame = []
         if (ret):       # If an invalid frame is found then stop!
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) # video grayscale?
             faces = faceCascade.detectMultiScale(gray, 1.2, 6, minSize = (60,60)) # searches video for faces
@@ -125,19 +126,31 @@ if __name__ == '__main__':
                 L.start()
 
                 ## print 'here3'
-                eye_frame.append(right_eye_parent_conn.recv())
-                eye_frame.append(left_eye_parent_conn.recv())
+                #eye_frame.append(right_eye_parent_conn.recv())
+                #eye_frame.append(left_eye_parent_conn.recv())
                 # print eye_frame
                 mouth_frame = mouth_parent_conn.recv()
                 ## print eye_frame
-                feature_data.append(eye_frame[0])
-                feature_data.append(eye_frame[1])
+                #feature_data.append(eye_frame[0])
+                #feature_data.append(eye_frame[1])
 
-                feature_data.append(mouth_frame[0])
-                feature_data.append(mouth_frame[1])
-                feature_data.append(w)
-                feature_data.append(h)
-                E = Process(target=detectEmotion, args=(emotion_child_conn, feature_data))
+                #feature_data.append(mouth_frame[0])
+                #feature_data.append(mouth_frame[1])
+
+                #feature_data.append(w)
+                #feature_data.append(h)
+
+                face_features = {
+                    'r_eye': right_eye_parent_conn.recv(),
+                    'l_eye': left_eye_parent_conn.recv(),
+                    'mouth_width': mouth_frame[0],
+                    'mouth_height': mouth_frame[1],
+                    'face_width': w,
+                    'face_heigth': h
+                }
+
+                #E = Process(target=detectEmotion, args=(emotion_child_conn, feature_data))
+                E = Process(target=detectEmotion2, args=(emotion_child_conn, face_features))
                 E.start()
                 
                 picture_path = emotion_parent_conn.recv()
@@ -182,3 +195,4 @@ if __name__ == '__main__':
 cv2.VideoCapture(0).release()
 cv2.destroyAllWindows()
 		
+""" TODO: in the future it may be better to reduse the resolution of the image/video input in order to speed up the video output while keeping the output at the higher resolution. """
