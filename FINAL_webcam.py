@@ -50,7 +50,7 @@ def findLeftEye(conn, data):
 
 def findMouth(conn, data):
     mouth = mouthCascade.detectMultiScale(data[0])
-    roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
+    #roi_color = frame[data[2]:data[2]+(data[3]/2), data[1]:data[1]+data[4]]
     if(len(mouth) == 0):
         conn.send([0,0,0,0])
         conn.close()
@@ -100,11 +100,11 @@ if __name__ == '__main__':
             faces = faceCascade.detectMultiScale(gray, 1.2, 6, minSize = (60,60)) # searches video for faces
 
             for (x,y,w,h) in faces:
-                roi_gray = gray[y:y+(h/2), x:x+w] # Area to search for the eyes. // this is half the face frame.
+                roi_gray = gray[y:y+(int(h/2)), x:x+w] # Area to search for the eyes. // this is half the face frame.
                 nose_roi_gray = gray[y:y+h,x:x+w]
                 roi_color = frame[y:y+h,x:x+w]
                 ## print 'stuff'
-                mouth_roi_gray = gray[(y+h)/2:y+h,x:x+w]
+                mouth_roi_gray = gray[int((y+h)/2):y+h,x:x+w]
                 ## print mouth_roi_gray
 
 
